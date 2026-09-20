@@ -1,0 +1,228 @@
+mkdir -p verification/test_vectors
+python3 python/generate_vectors.py
+Generated 5 test transactions.
+iverilog -g2012 -o sim.vvp rtl/pe/*.sv rtl/array/*.sv rtl/memory/*.sv rtl/control/*.sv rtl/axi/*.sv rtl/top/*.sv tb/accelerator_tb.sv
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:82: warning: System task ($display) cannot be synthesized in an always_ff process.
+rtl/pe/systolic_pe.sv:87: warning: System task ($display) cannot be synthesized in an always_ff process.
+vvp sim.vvp
+VCD info: dumpfile accelerator.vcd opened for output.
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=xxxxxxxx, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=00000000, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=00000000, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=00000000, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=00000000, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=00000000, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=00000000, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=00000000, product_ext=xxxxxxxx
+Time 5000: PE acc_out became X! rst=1, clear=0, drain=0, en=0, acc_in=00000000, product_ext=xxxxxxxx
+mem_A[0] = d7ca52e63ceadce6
+mem_B[0] = a4126be719622ce3
+=================================================
+       FULL SYSTEM ACCELERATOR TESTBENCH         
+=================================================
+[INFO] Running Mid-Transaction Reset Test...
+[INFO] Reset applied. Moving to main transactions...
+[INFO] Pumping Transaction 0...
+[INFO] Pumping Transaction 1...
+[INFO] Transaction 0 output drained.
+[INFO] Pumping Transaction 2...
+[INFO] Pumping Transaction 3...
+[INFO] Transaction 1 output drained.
+[INFO] Transaction 2 output drained.
+[INFO] Pumping Transaction 4...
+[INFO] Transaction 3 output drained.
+[INFO] Transaction 4 output drained.
+[PASSED] Full system executed correctly.
+=================================================
+tb/accelerator_tb.sv:149: $finish called at 2440000 (1ps)
+python3 python/compare_results.py
+TEST PASSED: RTL matches Golden Model perfectly.

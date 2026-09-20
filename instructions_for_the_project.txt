@@ -1,0 +1,1525 @@
+Yes. I would add a dedicated **“Project Creation Rules & Engineering Instructions”** section to the Gemini master prompt. This is important because otherwise Gemini may produce code that looks complete but has architectural inconsistencies, unverified assumptions, or modules that do not actually integrate.
+
+You can append the following section directly to the master prompt:
+
+---
+
+# PROJECT CREATION RULES — MUST FOLLOW THROUGHOUT THE ENTIRE PROJECT
+
+While creating the project, follow these engineering rules strictly. These rules have higher priority than convenience, brevity, or generating code quickly.
+
+## 1. Build the project incrementally
+
+Do **not** generate the entire RTL as disconnected modules.
+
+Build and reason through the project in this order:
+
+1. INT8 MAC Processing Element
+2. PE testbench
+3. 2×2 systolic array
+4. 2×2 testbench
+5. Parameterized systolic array
+6. 4×4 configuration
+7. 8×8 configuration
+8. Array/controller interface
+9. Input/output buffering
+10. Ping-pong buffer controller
+11. AXI4-Stream input
+12. AXI4-Stream output
+13. Main accelerator FSM
+14. Top-level integration
+15. Assertions
+16. Complete verification environment
+17. Python golden reference
+18. Synthesis scripts
+19. Timing constraints
+20. Documentation
+
+At every stage, check whether the newly created module is logically compatible with all previously created modules.
+
+Do not proceed with an architectural assumption that has not been explicitly defined.
+
+---
+
+# 2. Establish the architecture BEFORE writing RTL
+
+Before generating the RTL, explicitly define:
+
+* Dataflow
+* PE behavior
+* Matrix dimensions
+* K dimension
+* Accumulation strategy
+* Input/output data movement
+* Number of cycles required for computation
+* Pipeline stages
+* Buffer organization
+* AXI4-Stream packet structure
+* `TLAST` semantics
+* Matrix element ordering
+* Buffer ownership
+* Buffer switching conditions
+* Reset behavior
+* FSM states
+* Counter behavior
+
+Create a clear architecture specification first.
+
+Do not write RTL until these decisions are internally consistent.
+
+---
+
+# 3. Do not hide ambiguity
+
+If something is not defined, do not silently choose an arbitrary implementation.
+
+For every important architectural decision, state:
+
+**Decision → Reason → Consequence**
+
+For example:
+
+> Decision: Use output-stationary dataflow.
+> Reason: Keeps partial sums local to each PE and reduces partial-sum movement.
+> Consequence: A and B operands must be scheduled so that each PE receives the correct operands over successive cycles.
+
+If multiple architectures are possible, select one and document why.
+
+---
+
+# 4. Keep the implementation genuinely scalable
+
+The project is called:
+
+**Scalable 8×8 INT8 Systolic Array Accelerator**
+
+Therefore, scalability must exist in the RTL rather than only in the project description.
+
+Use parameters such as:
+
+```systemverilog
+parameter int DATA_WIDTH = 8;
+parameter int ACC_WIDTH  = 32;
+parameter int ARRAY_ROWS = 8;
+parameter int ARRAY_COLS = 8;
+parameter int K_SIZE     = 8;
+```
+
+Avoid hard-coding:
+
+```systemverilog
+[7:0]
+[31:0]
+[7:0][7:0]
+```
+
+where parameters should be used.
+
+The default configuration must be:
+
+```text
+ARRAY_ROWS = 8
+ARRAY_COLS = 8
+DATA_WIDTH = 8
+ACC_WIDTH  = 32
+```
+
+Conceptually ensure the architecture can elaborate for:
+
+```text
+4×4
+8×8
+16×16
+```
+
+Do not claim that arbitrary matrix dimensions are supported unless the controller and tiling mechanism actually support them.
+
+---
+
+# 5. Be extremely careful with signed arithmetic
+
+INT8 must be explicitly treated as **signed two's-complement**.
+
+Define signedness clearly.
+
+For example:
+
+```systemverilog
+logic signed [DATA_WIDTH-1:0] a;
+logic signed [DATA_WIDTH-1:0] b;
+logic signed [ACC_WIDTH-1:0] acc;
+```
+
+Do not depend on implicit SystemVerilog signedness rules.
+
+Explicitly reason about:
+
+```text
+INT8 × INT8
+     ↓
+16-bit signed product
+     ↓
+32-bit signed accumulation
+```
+
+Check:
+
+```text
++127 × +127
++127 × -128
+-128 × +127
+-128 × -128
+0 × anything
+```
+
+Define the accumulator overflow policy.
+
+Do not silently assume unlimited precision.
+
+---
+
+# 6. Never use magic numbers
+
+Avoid unexplained constants such as:
+
+```systemverilog
+8
+16
+32
+64
+255
+```
+
+when they represent architectural parameters.
+
+Use:
+
+```systemverilog
+DATA_WIDTH
+ACC_WIDTH
+ARRAY_ROWS
+ARRAY_COLS
+K_SIZE
+AXIS_DATA_WIDTH
+```
+
+Use `localparam` for derived values.
+
+For example:
+
+```systemverilog
+localparam int NUM_PE = ARRAY_ROWS * ARRAY_COLS;
+```
+
+---
+
+# 7. Every interface must have one authoritative definition
+
+Before connecting modules, define the exact interface.
+
+For every module document:
+
+```text
+Port
+Direction
+Width
+Signed/Unsigned
+Clock domain
+Reset behavior
+Valid semantics
+Ready semantics
+Meaning
+```
+
+Do not allow two modules to independently assume different meanings for the same signal.
+
+---
+
+# 8. Use consistent naming
+
+Use a consistent naming convention throughout the project.
+
+Recommended:
+
+```text
+clk
+rst
+start
+done
+busy
+
+a_in
+b_in
+a_out
+b_out
+
+acc_in
+acc_out
+
+valid_in
+valid_out
+
+s_axis_tdata
+s_axis_tvalid
+s_axis_tready
+s_axis_tlast
+
+m_axis_tdata
+m_axis_tvalid
+m_axis_tready
+m_axis_tlast
+```
+
+Do not rename signals unnecessarily between modules.
+
+---
+
+# 9. Clock and reset must be consistent
+
+Use one clearly defined clock domain unless multiple domains are genuinely required.
+
+Prefer:
+
+```systemverilog
+always_ff @(posedge clk)
+```
+
+with a clearly documented reset strategy.
+
+If using synchronous active-high reset:
+
+```text
+rst = 1 → synchronous reset
+rst = 0 → normal operation
+```
+
+Use the same reset convention across the design.
+
+Check reset behavior for:
+
+* PE
+* systolic array
+* buffers
+* counters
+* FSM
+* AXI interfaces
+* output registers
+
+No stale state should survive reset.
+
+---
+
+# 10. Avoid accidental latches
+
+For every `always_comb` block:
+
+* assign all outputs on every path
+* provide appropriate defaults
+* ensure no incomplete assignments
+
+For FSM logic:
+
+```text
+default assignments
+↓
+case(state)
+↓
+all relevant outputs assigned
+```
+
+Do not create unintended combinational storage.
+
+---
+
+# 11. Avoid multiple drivers
+
+Every register or signal must have a clear owner.
+
+Do not assign the same signal from:
+
+* multiple `always_ff` blocks
+* an `always_ff` and `assign`
+* multiple combinational blocks
+
+Before finalizing, perform a **multiple-driver audit**.
+
+---
+
+# 12. Systolic array must be cycle-accurate
+
+Do not merely connect 64 MAC units in parallel and call it a systolic array.
+
+The design must demonstrate actual systolic data movement.
+
+Clearly define:
+
+```text
+A movement direction
+B movement direction
+Partial-sum location
+PE-to-PE communication
+Pipeline timing
+Input skew
+Output timing
+```
+
+For example:
+
+```text
+A → → → → 
+B ↓ ↓ ↓ ↓
+```
+
+Document exactly which operand enters each PE on every cycle.
+
+---
+
+# 13. Verify the systolic schedule manually
+
+Before generating the final testbench, manually work through a small example.
+
+Use:
+
+```text
+A = [ [1, 2],
+      [3, 4] ]
+
+B = [ [5, 6],
+      [7, 8] ]
+```
+
+Expected:
+
+```text
+C = [ [19, 22],
+      [43, 50] ]
+```
+
+Show the cycle-by-cycle movement of:
+
+```text
+A operands
+B operands
+partial sums
+```
+
+Ensure the RTL architecture produces exactly this mapping.
+
+---
+
+# 14. Clearly distinguish PE count from MAC operations
+
+For the 8×8 array:
+
+```text
+8 × 8 = 64 PEs
+```
+
+If every PE performs one MAC per cycle during full utilization:
+
+```text
+64 MACs/cycle
+```
+
+is the theoretical peak.
+
+Do not automatically claim:
+
+```text
+64 MACs/cycle sustained
+```
+
+because actual sustained throughput depends on:
+
+* utilization
+* memory supply
+* controller behavior
+* pipeline bubbles
+* AXI backpressure
+* matrix dimensions
+* buffer switching
+
+All performance numbers must be either mathematically derived or experimentally measured.
+
+---
+
+# 15. AXI4-Stream must follow handshake semantics
+
+For every AXI4-Stream interface, correctly implement:
+
+```text
+TVALID
+TREADY
+TDATA
+TLAST
+```
+
+A transfer occurs only when:
+
+```text
+TVALID && TREADY
+```
+
+When:
+
+```text
+TVALID = 1
+TREADY = 0
+```
+
+the producer must hold the corresponding transfer information stable until accepted.
+
+Explicitly verify this.
+
+Do not lose data under backpressure.
+
+---
+
+# 16. Define TLAST precisely
+
+Do not use `TLAST` arbitrarily.
+
+Document:
+
+> What exactly does one AXI packet represent?
+
+Possible meanings include:
+
+```text
+one matrix tile
+one matrix row
+one output tile
+one complete transaction
+```
+
+Select one architecture and use it consistently on both input and output paths.
+
+The testbench must explicitly test `TLAST`.
+
+---
+
+# 17. Define AXI data packing
+
+If multiple INT8 values are packed into `TDATA`, document:
+
+```text
+AXIS_DATA_WIDTH
+element 0 location
+element 1 location
+byte ordering
+row ordering
+column ordering
+matrix/tile ordering
+```
+
+For example:
+
+```text
+TDATA[7:0]    → element 0
+TDATA[15:8]   → element 1
+...
+```
+
+Do not leave byte/element ordering implicit.
+
+The Python golden model and RTL testbench must use exactly the same ordering.
+
+---
+
+# 18. Ping-pong buffering must be real
+
+Do not simply create two memories and call them ping-pong buffers.
+
+Clearly define:
+
+```text
+Buffer A
+Buffer B
+
+active buffer
+loading buffer
+compute ownership
+write ownership
+read ownership
+swap condition
+```
+
+Example:
+
+```text
+Cycle region:
+Buffer A → COMPUTE
+Buffer B → LOAD
+
+then:
+
+Buffer B → COMPUTE
+Buffer A → LOAD
+```
+
+Ensure the loading side never overwrites data currently being consumed by the compute side.
+
+---
+
+# 19. Prevent buffer hazards
+
+Explicitly check for:
+
+* overwrite-before-read
+* read-before-write
+* premature buffer swap
+* stale data
+* incorrect buffer select
+* simultaneous ownership
+* incomplete transaction
+* reset during buffer operation
+
+The controller must have a well-defined ownership model.
+
+---
+
+# 20. Controller must be deterministic
+
+Define the FSM explicitly.
+
+A possible structure:
+
+```text
+IDLE
+ ↓
+LOAD
+ ↓
+COMPUTE
+ ↓
+DRAIN
+ ↓
+OUTPUT
+ ↓
+DONE
+ ↓
+IDLE
+```
+
+If ping-pong operation requires additional states, add them.
+
+For every state document:
+
+```text
+Entry condition
+Actions
+Counters
+Exit condition
+Next state
+```
+
+Check every transition.
+
+---
+
+# 21. Counters must be formally reasoned about
+
+For every counter identify:
+
+```text
+minimum value
+maximum value
+increment condition
+reset condition
+terminal condition
+```
+
+Check:
+
+* off-by-one errors
+* underflow
+* overflow
+* width
+* terminal-count behavior
+
+Use `$clog2` or equivalent derived widths where appropriate.
+
+---
+
+# 22. Separate datapath and control
+
+Prefer a clean architecture:
+
+```text
+CONTROL
+   ↓
+DATAPATH
+   ↓
+MEMORY / BUFFER
+   ↓
+AXI INTERFACE
+```
+
+Do not put excessive control logic inside individual PEs.
+
+The PE should remain reusable.
+
+---
+
+# 23. Keep the PE simple and reusable
+
+The PE should perform a well-defined operation such as:
+
+```text
+accumulator_next =
+    accumulator + signed(a) * signed(b)
+```
+
+while forwarding the appropriate operands.
+
+Do not put:
+
+* AXI logic
+* matrix-level FSM
+* buffer control
+* packet handling
+
+inside the PE.
+
+---
+
+# 24. Do not over-pipeline unnecessarily
+
+Only add pipeline registers when there is an architectural reason.
+
+If multiplication and accumulation are performed in one cycle, document the timing.
+
+If multiplication and addition are separated:
+
+```text
+Cycle N:
+multiply
+
+Cycle N+1:
+accumulate
+```
+
+Document the resulting latency and modify the systolic schedule accordingly.
+
+Never assume that inserting a register has no effect on data alignment.
+
+---
+
+# 25. Verification must be independent of RTL
+
+The golden model must not simply reproduce the RTL algorithm line-by-line.
+
+Use an independent mathematical reference.
+
+For example:
+
+```python
+C = A @ B
+```
+
+using signed/widened arithmetic with explicitly defined overflow behavior.
+
+The purpose of the golden model is to detect RTL mistakes.
+
+---
+
+# 26. Verification must include directed AND random tests
+
+Directed tests:
+
+```text
+identity matrix
+zero matrix
+all +1
+positive values
+negative values
+mixed signs
+maximum INT8
+minimum INT8
+small matrices
+known matrix multiplication
+```
+
+Random tests:
+
+```text
+random A
+random B
+random K
+random transactions
+random AXI stalls
+```
+
+Do not rely only on random testing.
+
+---
+
+# 27. Test AXI backpressure aggressively
+
+Test scenarios such as:
+
+```text
+TREADY always 1
+TREADY occasionally 0
+TREADY frequently 0
+TREADY changes randomly
+```
+
+Ensure:
+
+```text
+no data loss
+no duplication
+no reordering
+no deadlock
+```
+
+Also check that `TDATA` and `TLAST` remain stable while `TVALID=1` and `TREADY=0`.
+
+---
+
+# 28. Test multiple consecutive transactions
+
+Do not stop after one matrix multiplication.
+
+Verify:
+
+```text
+Transaction 1
+Transaction 2
+Transaction 3
+...
+```
+
+Check:
+
+* accumulator clearing
+* buffer switching
+* output separation
+* FSM return to IDLE
+* no stale data
+* no transaction overlap unless intentionally supported
+
+---
+
+# 29. Test reset thoroughly
+
+Include:
+
+```text
+reset before transaction
+reset during idle
+reset after transaction
+reset between transactions
+```
+
+If reset during an active transaction is supported, define exactly what happens.
+
+Otherwise document the restriction.
+
+---
+
+# 30. Add SystemVerilog Assertions
+
+At minimum consider assertions for:
+
+### AXI stability
+
+When:
+
+```text
+TVALID && !TREADY
+```
+
+then:
+
+```text
+TDATA remains stable
+TLAST remains stable
+```
+
+### FSM validity
+
+Ensure only legal states are reached.
+
+### Counter bounds
+
+Ensure counters remain within their intended ranges.
+
+### Buffer ownership
+
+Ensure compute and load sides do not illegally access the same buffer.
+
+### Reset
+
+Ensure reset produces the documented initial state.
+
+Do not claim assertions are formally proven if they were not formally run.
+
+---
+
+# 31. Maintain one source of truth for parameters
+
+Do not independently redefine:
+
+```text
+DATA_WIDTH
+ACC_WIDTH
+ARRAY_ROWS
+ARRAY_COLS
+K_SIZE
+AXIS_DATA_WIDTH
+```
+
+across multiple files unless required.
+
+Centralize configuration where practical.
+
+---
+
+# 32. Make the project synthesis-friendly
+
+RTL should avoid unnecessary constructs that are difficult for synthesis.
+
+Prefer:
+
+```systemverilog
+logic
+always_ff
+always_comb
+generate
+for
+case
+typedef enum
+```
+
+Avoid unnecessary:
+
+```text
+delays (#)
+real numbers
+non-synthesizable behavioral constructs
+file I/O inside synthesizable RTL
+dynamic memory
+```
+
+Testbench-only constructs must remain outside synthesizable RTL.
+
+---
+
+# 33. Separate RTL from verification
+
+Maintain a clean directory structure:
+
+```text
+rtl/
+tb/
+python/
+verification/
+scripts/
+constraints/
+docs/
+synthesis/
+openroad/
+```
+
+Do not mix testbench code into RTL modules.
+
+---
+
+# 34. No hidden dependencies
+
+Every source file required to compile the project must be explicitly present.
+
+Do not reference imaginary files.
+
+Do not assume external IP unless explicitly documented.
+
+If an external dependency is unavoidable:
+
+```text
+Dependency
+Version
+Purpose
+Source
+Integration method
+```
+
+must be documented.
+
+---
+
+# 35. No incomplete placeholders
+
+Do not generate:
+
+```systemverilog
+// TODO
+// implement later
+...
+```
+
+for critical functionality.
+
+Do not use empty modules to make the project appear complete.
+
+Every required module must have an actual implementation.
+
+---
+
+# 36. Never fake validation
+
+Because execution tools are unavailable, NEVER claim:
+
+```text
+simulation passed
+synthesis passed
+timing passed
+P&R passed
+coverage achieved
+```
+
+unless the result is actually available from a real execution.
+
+Instead report:
+
+```text
+STATICALLY REVIEWED
+NOT EXECUTED
+REQUIRES LOCAL VALIDATION
+```
+
+---
+
+# 37. Perform static compilation-style checking
+
+Even without executing a compiler, inspect the code as if performing compilation.
+
+Check:
+
+* missing semicolons
+* undeclared signals
+* incorrect module names
+* incorrect port names
+* incorrect widths
+* signed/unsigned mismatches
+* missing parameters
+* invalid generate constructs
+* multiple drivers
+* incomplete assignments
+* incorrect array indexing
+* invalid enum/state references
+* undeclared packages
+* inconsistent typedefs
+* module hierarchy errors
+
+---
+
+# 38. Perform an interface connectivity audit
+
+Create a table:
+
+| Module | Signal | Width | Source | Destination | Meaning |
+| ------ | ------ | ----: | ------ | ----------- | ------- |
+
+Every top-level signal must have a clear path.
+
+Check:
+
+```text
+AXI → input buffer
+input buffer → controller/datapath
+datapath → output buffer
+output buffer → AXI
+controller → buffers
+controller → systolic array
+```
+
+---
+
+# 39. Perform a width audit
+
+Create a width table covering:
+
+```text
+A
+B
+product
+accumulator
+PE output
+AXI data
+matrix index
+K counter
+row counter
+column counter
+buffer address
+```
+
+For every width explain why it is correct.
+
+---
+
+# 40. Perform a signedness audit
+
+For every arithmetic path identify:
+
+```text
+signed
+unsigned
+conversion point
+```
+
+Especially inspect:
+
+```text
+INT8 input
+×
+INT8 input
+↓
+product
+↓
+sign extension
+↓
+INT32 accumulator
+```
+
+This is a high-priority audit item.
+
+---
+
+# 41. Perform a cycle-level audit
+
+Create a cycle table for at least one small example:
+
+| Cycle | A inputs | B inputs | PE activity | Accumulation | Output |
+| ----- | -------- | -------- | ----------- | ------------ | ------ |
+
+Then compare the intended schedule with the RTL structure.
+
+Do not assume they match merely because the topology looks correct.
+
+---
+
+# 42. Perform a deadlock audit
+
+Trace:
+
+```text
+AXI input
+→ buffer
+→ controller
+→ compute
+→ output buffer
+→ AXI output
+```
+
+Look specifically for:
+
+```text
+TREADY waiting for TVALID
+TVALID waiting for TREADY
+buffer waiting for controller
+controller waiting for buffer
+output waiting for downstream
+```
+
+Ensure no circular wait exists.
+
+---
+
+# 43. Perform a data-loss audit
+
+For every transaction answer:
+
+```text
+Where does each input element enter?
+Where is it stored?
+When is it consumed?
+Where does each output element go?
+When is it emitted?
+What happens if AXI stalls?
+```
+
+Every element must have a deterministic path.
+
+---
+
+# 44. Perform a stale-data audit
+
+After every new transaction verify:
+
+```text
+accumulators cleared/reinitialized
+buffers correctly overwritten
+valid bits reset
+counters reset
+output registers reset/updated
+FSM reset
+```
+
+This is particularly important for repeated matrix multiplications.
+
+---
+
+# 45. Perform parameterization audit
+
+Conceptually inspect:
+
+```text
+4×4
+8×8
+16×16
+```
+
+for:
+
+* generate loops
+* array indices
+* counters
+* buffer dimensions
+* address widths
+* output packing
+* AXI packing
+* controller limits
+
+Do not assume that replacing `8` with a parameter automatically makes the design scalable.
+
+---
+
+# 46. Keep documentation synchronized with RTL
+
+Whenever RTL changes:
+
+```text
+architecture documentation
+interface tables
+timing diagrams
+README
+verification description
+```
+
+must be checked for consistency.
+
+Do not allow documentation to describe an older architecture.
+
+---
+
+# 47. Maintain a design decision log
+
+Create:
+
+```text
+docs/design_decisions.md
+```
+
+Record important decisions such as:
+
+```text
+Dataflow
+Accumulator width
+Reset type
+AXI packet definition
+TLAST definition
+Buffer strategy
+Matrix tiling
+Pipeline structure
+Overflow behavior
+Parameterization strategy
+```
+
+For each:
+
+```text
+Decision
+Reason
+Alternative considered
+Impact
+```
+
+---
+
+# 48. Maintain a known-issues document
+
+Create:
+
+```text
+docs/known_issues.md
+```
+
+Separate:
+
+```text
+Verified by reasoning
+Not executable in current environment
+Requires simulation
+Requires synthesis
+Requires FPGA/ASIC implementation
+```
+
+Never hide unresolved issues.
+
+---
+
+# 49. Use measurable performance metrics
+
+The project must eventually be evaluated using metrics such as:
+
+```text
+Latency
+Throughput
+MACs/cycle
+Clock frequency
+PE utilization
+Memory bandwidth
+Buffer efficiency
+Resource utilization
+Area
+Power
+Energy per operation
+```
+
+Do not invent values.
+
+Provide formulas where measurements are unavailable.
+
+For example:
+
+```text
+Peak MAC throughput =
+Number of active PEs × Clock frequency
+```
+
+For an 8×8 array:
+
+```text
+= 64 × f
+```
+
+assuming one MAC/PE/cycle.
+
+---
+
+# 50. Compare against a baseline
+
+Create a baseline such as:
+
+```text
+non-systolic sequential matrix multiplication
+```
+
+or another clearly defined implementation.
+
+Compare using measurable metrics.
+
+Do not claim an improvement until it is actually measured.
+
+---
+
+# 51. Keep resume claims evidence-based
+
+Resume bullets must distinguish:
+
+```text
+Implemented
+Designed
+Verified
+Synthesized
+Measured
+Estimated
+```
+
+For example, if simulation was not executed:
+
+> Designed and statically verified a parameterized 8×8 INT8 systolic-array accelerator with AXI4-Stream and ping-pong buffering.
+
+Do **not** write:
+
+> Achieved X% throughput improvement
+
+unless that number has actually been measured.
+
+---
+
+# 52. Think like a VLSI interviewer
+
+While creating the project, explicitly identify interview-relevant design questions:
+
+```text
+Why systolic array?
+Why INT8?
+Why 8×8?
+Why output-stationary?
+Why INT32 accumulator?
+Why AXI4-Stream?
+Why ping-pong buffering?
+How does backpressure work?
+How many MACs/cycle?
+What is latency?
+How does scaling affect area?
+What happens for negative INT8 values?
+What happens on accumulator overflow?
+How are matrices larger than 8×8 handled?
+What limits throughput?
+What happens if memory cannot feed the array?
+```
+
+The final documentation should contain concise answers.
+
+---
+
+# 53. Project must tell one coherent engineering story
+
+The final project should have this logical chain:
+
+```text
+AI matrix multiplication workload
+        ↓
+High compute + data movement requirement
+        ↓
+INT8 quantized computation
+        ↓
+Spatial parallelism
+        ↓
+8×8 systolic array
+        ↓
+Local data reuse
+        ↓
+AXI4-Stream data movement
+        ↓
+Ping-pong buffering
+        ↓
+Overlap communication and computation
+        ↓
+Parameterized RTL implementation
+        ↓
+Verification
+        ↓
+Synthesis / PPA evaluation
+```
+
+Every major RTL component must have a reason for existing in this architecture.
+
+---
+
+# 54. Final mandatory self-review
+
+Before declaring the project complete, perform **three separate audits**.
+
+### Audit 1 — RTL correctness
+
+Check:
+
+```text
+syntax
+types
+widths
+signedness
+drivers
+FSM
+counters
+reset
+dataflow
+pipeline
+array indexing
+```
+
+### Audit 2 — System correctness
+
+Check:
+
+```text
+AXI handshake
+TLAST
+buffer ownership
+ping-pong operation
+transaction boundaries
+backpressure
+deadlock
+data loss
+multiple transactions
+```
+
+### Audit 3 — Project completeness
+
+Check:
+
+```text
+RTL
+testbenches
+golden model
+assertions
+coverage plan
+scripts
+constraints
+README
+architecture documentation
+timing documentation
+verification documentation
+interview questions
+resume bullets
+```
+
+After each audit:
+
+```text
+List issues
+Classify severity
+Fix CRITICAL/HIGH issues
+Re-review affected modules
+Repeat until no known CRITICAL/HIGH issues remain
+```
+
+---
+
+# 55. Final output must contain a validation status
+
+At the very end provide:
+
+```text
+PROJECT STATUS
+---------------
+Architecture: STATICALLY REVIEWED
+RTL: STATICALLY REVIEWED
+Integration: STATICALLY REVIEWED
+Verification environment: CREATED
+Python golden model: CREATED
+Assertions: CREATED
+Synthesis scripts: CREATED
+Timing constraints: CREATED
+
+Simulation: NOT EXECUTED
+Synthesis: NOT EXECUTED
+P&R: NOT EXECUTED
+Hardware validation: NOT EXECUTED
+```
+
+Then provide:
+
+```text
+REMAINING VALIDATION REQUIRED
+1.
+2.
+3.
+...
+```
+
+Do not label the project “fully verified” when it has not been executed.
+
+---
+
+## MOST IMPORTANT RULE
+
+**Correctness is more important than completeness.**
+
+If you discover that an earlier module or architectural decision is wrong, **stop, explain the problem, correct it, and propagate the correction through the dependent modules**.
+
+Do not preserve an incorrect design merely because code has already been generated.
+
+The final codebase must be internally consistent as a complete hardware system—not merely a collection of individually plausible SystemVerilog files.
+
+---
+
+### I would also add one final instruction to Gemini
+
+> **Do not optimize for producing the largest amount of code. Optimize for producing a coherent, synthesizable, verifiable hardware architecture. If generating 100 files would introduce inconsistency, generate fewer files with cleaner hierarchy. Every file must have a purpose, every signal must have an owner, every interface must have a defined protocol, and every architectural claim must be supported by the RTL or explicitly marked as requiring future validation.**
+
+That last rule is particularly important for your project. It prevents Gemini from producing a huge repository that *looks* like a professional accelerator but has disconnected modules underneath.
